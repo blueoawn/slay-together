@@ -22,6 +22,8 @@ export abstract class PlayerController extends Phaser.Physics.Arcade.Sprite impl
     maxHealth = 1;
     health = this.maxHealth;
     knockback = 300;  // Knockback force when colliding with enemies
+    protected bodyWidth = 32;  // Default physics body width
+    protected bodyHeight = 32;  // Default physics body height
     gameScene: GameScene;
 
     // Collision cooldown - prevents rapid damage from continuous contact
@@ -80,6 +82,12 @@ export abstract class PlayerController extends Phaser.Physics.Arcade.Sprite impl
         scene.physics.add.existing(this);
         this.setCollideWorldBounds(true); // prevent ship from leaving the screen
         this.setDepth(Depth.PLAYER); // make character appear on top of other game objects
+        
+        // Set default physics body size
+        if (this.body) {
+            this.body.setSize(this.bodyWidth, this.bodyHeight);
+        }
+        
         this.gameScene = scene;
         this.baseVelocityMax = this.velocityMax;  // Store base max velocity for speed modifications
         this.setMaxVelocity(this.velocityMax); // limit maximum speed of ship

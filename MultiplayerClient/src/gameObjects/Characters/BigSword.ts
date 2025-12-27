@@ -63,17 +63,7 @@ export class BigSword extends PlayerController {
         this.setOrigin(0.5, 0.5);
         this.setScale(1.5, 1.5);
 
-        const frameWidth = 60;
-        const frameHeight = 77;
 
-        const bodyWidth = frameWidth * 0.5;
-        const bodyHeight = frameHeight * 0.5;
-
-        this.setBodySize(bodyWidth, bodyHeight);
-
-        const offsetX = (frameWidth - bodyWidth) / 2;
-        const offsetY = (frameHeight - bodyHeight) / 2 + frameHeight * 0.1;
-        this.setOffset(offsetX, offsetY);
 
         this.on('destroy', () => {
             this.cleanupGraphics();
