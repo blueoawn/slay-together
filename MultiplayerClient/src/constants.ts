@@ -9,6 +9,7 @@ export enum Depth {
     PLAYER_UI = 101,      // Health bar, skill bar
     ABILITIES = 99,       // Beams, shields, etc.
     UI_OVERLAY = 200,
+    JOYSTICK = 1000,      // Virtual joystick and mobile controls
     DEBUG = 999
 }
 

@@ -14,7 +14,6 @@ import ASSETS from '../assets.ts';
 import Projectile from "../gameObjects/Projectile/Projectile.ts";
 import Wall from "../gameObjects/Wall.ts";
 import TimerEvent = Phaser.Time.TimerEvent;
-import EnemyFlying from "../gameObjects/NPC/EnemyFlying.ts";
 import { Spawner } from "../gameObjects/Spawner.ts";
 import NetworkManager from '../../managers/NetworkManager.ts';
 import { DeltaDeserializer } from '../../network/DeltaDeserializer.ts';
@@ -83,7 +82,7 @@ export class GameScene extends Scene
     lastInputSendTime: number;
     tick: number;
     syncedEnemyBullets: Map<string, Projectile> = new Map();  // Track network-synced enemy bullets
-    syncedEnemies: Map<string, EnemyFlying> = new Map();  // Track network-synced enemies
+    syncedEnemies: Map<string, EnemyController> = new Map();  // Track network-synced enemies
     syncedWalls: Map<string, Wall> = new Map();  // Track network-synced walls
     syncedConsumables: Map<string, any> = new Map();  // Track network-synced consumables
     areaBoundaries: any[] = [];  // Static area zones with effects (no network sync)
