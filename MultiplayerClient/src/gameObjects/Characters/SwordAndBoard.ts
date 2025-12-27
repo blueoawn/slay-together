@@ -33,7 +33,7 @@ export class SwordAndBoard extends PlayerController {
 
         this.characterSpeed = 600;
         this.velocityMax = 350;
-        this.maxHealth = 3;
+        this.maxHealth = 300;
         this.health = this.maxHealth;
         this.ability1Rate = 20;
         this.ability2Rate = 180;

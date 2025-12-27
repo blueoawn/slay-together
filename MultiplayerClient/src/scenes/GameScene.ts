@@ -398,9 +398,11 @@ export class GameScene extends Scene
         // Set up collisions based on game mode
         if (!this.networkEnabled && this.player) {
             CollisionManager.setupSinglePlayerCollisions(this);
+            CollisionManager.setupSinglePlayerAreaBoundaries(this);
         } else if (this.networkEnabled && this.playerManager) {
             // Set up multiplayer damage collisions (player bullets vs enemies, etc.)
             CollisionManager.setupMultiplayerCollisions(this);
+            CollisionManager.setupMultiplayerAreaBoundaries(this);
         }
 
         // Set up common collisions for both modes

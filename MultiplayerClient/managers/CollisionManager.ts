@@ -323,3 +323,89 @@ export function destroyEnemyBullet(scene: GameScene, _bulletDestroyer: Rectangle
         console.error('[COLLISION] Error destroying enemy bullet:', err);
     }
 }
+
+/**
+ * Set up area boundary overlaps for singleplayer mode
+ */
+export function setupSinglePlayerAreaBoundaries(scene: GameScene): void {
+    if (!scene.player) {
+        console.warn('[COLLISION] Cannot setup singleplayer area boundaries - player not found');
+        return;
+    }
+
+    if (!scene.areaBoundaries || scene.areaBoundaries.length === 0) {
+        return;
+    }
+
+    // Set up overlap detection for each area boundary
+    scene.areaBoundaries.forEach((boundary: any) => {
+        scene.physics.add.overlap(
+            scene.player,
+            boundary.getZone(),
+            (_player: any) => {
+                boundary.applyEffect(_player);
+            },
+            undefined,
+            scene
+        );
+    });
+
+    console.log(`[COLLISION] Area boundary overlaps set up for player with ${scene.areaBoundaries.length} boundaries`);
+}
+
+/**
+ * Set up area boundary overlaps for multiplayer mode
+ */
+export function setupMultiplayerAreaBoundaries(scene: GameScene): void {
+    if (!scene.playerManager) {
+        console.warn('[COLLISION] Cannot setup multiplayer area boundaries - playerManager not found');
+        return;
+    }
+
+    if (!scene.areaBoundaries || scene.areaBoundaries.length === 0) {
+        return;
+    }
+
+    const allPlayers = scene.playerManager.getAllPlayers();
+
+    // Set up overlap detection for each area boundary with each player
+    scene.areaBoundaries.forEach((boundary: any) => {
+        allPlayers.forEach(player => {
+            scene.physics.add.overlap(
+                player,
+                boundary.getZone(),
+                (_player: any) => {
+                    boundary.applyEffect(_player);
+                },
+                undefined,
+                scene
+            );
+        });
+    });
+
+    console.log(`[COLLISION] Area boundary overlaps set up for ${allPlayers.length} players with ${scene.areaBoundaries.length} boundaries`);
+}
+
+/**
+ * Set up area boundary overlaps for a single player (used when new players join)
+ */
+export function setupPlayerAreaBoundaries(scene: GameScene, player: PlayerController): void {
+    if (!scene.areaBoundaries || scene.areaBoundaries.length === 0) {
+        return;
+    }
+
+    // Set up overlap detection for each area boundary
+    scene.areaBoundaries.forEach((boundary: any) => {
+        scene.physics.add.overlap(
+            player,
+            boundary.getZone(),
+            (_player: any) => {
+                boundary.applyEffect(_player);
+            },
+            undefined,
+            scene
+        );
+    });
+
+    console.log(`[COLLISION] Area boundary overlaps set up for new player with ${scene.areaBoundaries.length} boundaries`);
+}

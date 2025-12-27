@@ -194,7 +194,7 @@ export const SummonersRift: MapData = {
             width: 90,
             height: 1343,       // Full map height
             effectType: AreaEffectType.SpeedModifier,
-            speedMultiplier: 1.5,  // 50% speed boost
+            speedMultiplier: 5,  // 5x
             visible: true,
             fillColor: 0x00BFFF,   // Deep sky blue
             fillAlpha: 0.25

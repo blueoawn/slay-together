@@ -70,6 +70,7 @@ export abstract class PlayerController extends Phaser.Physics.Arcade.Sprite impl
     
     // Speed modification properties
     protected baseVelocityMax: number = 0;  // Will be set to velocityMax in constructor
+    protected baseCharacterSpeed: number = 0;  // Will be set to characterSpeed in constructor
     protected speedBoostActive: boolean = false;
     protected speedBoostTimer: Phaser.Time.TimerEvent | null = null;
     protected areaSpeedMultiplier: number = 1.0;  // Multiplier from area boundaries
@@ -90,6 +91,7 @@ export abstract class PlayerController extends Phaser.Physics.Arcade.Sprite impl
         
         this.gameScene = scene;
         this.baseVelocityMax = this.velocityMax;  // Store base max velocity for speed modifications
+        this.baseCharacterSpeed = this.characterSpeed;  // Store base acceleration for speed modifications
         this.setMaxVelocity(this.velocityMax); // limit maximum speed of ship
         this.setDrag(this.drag);
         this.currentAim = new Vector2(x, y);  // Initialize aim to player position
@@ -161,6 +163,10 @@ export abstract class PlayerController extends Phaser.Physics.Arcade.Sprite impl
     protected updateMaxVelocity(): void {
         const newMaxVelocity = this.baseVelocityMax * this.areaSpeedMultiplier * this.speedBoostMultiplier;
         this.setMaxVelocity(newMaxVelocity);
+        
+        // Also update acceleration (characterSpeed) to match the speed modifier
+        const newCharacterSpeed = this.baseCharacterSpeed * this.areaSpeedMultiplier * this.speedBoostMultiplier;
+        this.characterSpeed = newCharacterSpeed;
     }
 
     /**

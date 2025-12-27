@@ -6,6 +6,7 @@ import { BigSword } from '../src/gameObjects/Characters/BigSword';
 import type { GameScene } from '../src/scenes/GameScene.ts';
 import { CharacterNamesEnum } from "../src/gameObjects/Characters/CharactersEnum.ts";
 import { FollowAndAttackBehavior } from '../src/behaviorScripts/FollowAndAttack';
+import * as CollisionManager from './CollisionManager';
 
 // Manager class for handling multiple players in multiplayer
 export class PlayerManager {
@@ -62,6 +63,9 @@ export class PlayerManager {
         if (isLocal) {
             this.localPlayerId = playerId;
         }
+
+        // Set up area boundary overlaps for this player
+        CollisionManager.setupPlayerAreaBoundaries(this.scene, player);
 
         console.log(`Created player: ${playerId} (${characterType}, local: ${isLocal})`);
 
