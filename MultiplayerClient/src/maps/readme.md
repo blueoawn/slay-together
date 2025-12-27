@@ -1,0 +1,1 @@
+This folder will contain static game data for different areas the players can be in. 
