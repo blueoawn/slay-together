@@ -151,7 +151,15 @@ export class AreaBoundary {
     update(): void {
         // Check if tracked entities are still in the zone
         this.affectedEntities.forEach(entity => {
-            if (!entity || !entity.active || !this.contains(entity.x, entity.y)) {
+            if (!entity || !entity.active) {
+                console.log(`[AREA] Removing inactive entity from tracking`);
+                this.removeEffect(entity);
+                return;
+            }
+            
+            // Check if entity has left the zone bounds
+            if (!this.contains(entity.x, entity.y)) {
+                console.log(`[AREA] Entity ${entity.constructor.name} left zone bounds (${entity.x}, ${entity.y})`);
                 this.removeEffect(entity);
             }
         });
@@ -239,7 +247,8 @@ export class AreaBoundary {
      * Called when entity enters zone
      */
     private onEntityEnter(entity: any): void {
-        console.log(`[AREA] ${entity.constructor.name} entered ${this.config.effectType} zone`);
+        console.log(`[AREA] ${entity.constructor.name} entered ${this.config.effectType} zone at (${entity.x.toFixed(0)}, ${entity.y.toFixed(0)})`);
+        console.log(`[AREA] Zone bounds: x=${this.zone.x}, y=${this.zone.y}, w=${this.config.width}, h=${this.config.height}`);
     }
 
     /**
@@ -247,7 +256,7 @@ export class AreaBoundary {
      * Similar to how Consumable.applyEffect() calls playerController methods
      */
     private onEntityExit(entity: any): void {
-        console.log(`[AREA] ${entity.constructor.name} exited ${this.config.effectType} zone`);
+        console.log(`[AREA] ${entity.constructor.name} exited ${this.config.effectType} zone at (${entity.x.toFixed(0)}, ${entity.y.toFixed(0)})`);
 
         // Restore original speed for SpeedModifier
         if (this.config.effectType === AreaEffectType.SpeedModifier) {

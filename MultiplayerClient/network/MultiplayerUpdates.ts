@@ -41,6 +41,9 @@ export function updateHost(
     // Update spawners (host-only logic)
     scene.updateSpawners?.();
 
+    // Update area boundaries (shared logic)
+    scene.updateAreaBoundaries?.();
+
     // Broadcast state to server at configured rate
     const now = Date.now();
     if (now - scene.lastStateSyncTime >= scene.stateSyncRate) {
@@ -120,6 +123,9 @@ export function updateClient(
 
     // Update all players (will be overridden by server deltas)
     playerManager?.update();
+
+    // Update area boundaries (shared logic)
+    scene.updateAreaBoundaries?.();
 
     // Send local input to server at configured rate
     const now = Date.now();
