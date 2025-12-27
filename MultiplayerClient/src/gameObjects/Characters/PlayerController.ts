@@ -233,10 +233,24 @@ export abstract class PlayerController extends Phaser.Physics.Arcade.Sprite impl
 
         // Handle rotation and aim
         if ('aim' in input && input.aim) {
-            this.currentAim = input.aim;  // Store aim position for abilities
-            this.rotation = Phaser.Math.Angle.Between(
-                this.x, this.y, input.aim.x, input.aim.y
-            ) + Math.PI / 2;
+            // For touch controls: if aim is (0,0) and we have movement, aim in movement direction
+            if (input.aim.x === 0 && input.aim.y === 0 && input.movement && input.movement.length() > 0) {
+                // Aim in the direction of movement (project forward from player position)
+                const aimDistance = 100;  // Distance to project aim point
+                this.currentAim = new Vector2(
+                    this.x + input.movement.x * aimDistance,
+                    this.y + input.movement.y * aimDistance
+                );
+                this.rotation = Phaser.Math.Angle.Between(
+                    this.x, this.y, this.currentAim.x, this.currentAim.y
+                ) + Math.PI / 2;
+            } else {
+                // Normal mouse/keyboard aiming - aim at cursor position
+                this.currentAim = input.aim;  // Store aim position for abilities
+                this.rotation = Phaser.Math.Angle.Between(
+                    this.x, this.y, input.aim.x, input.aim.y
+                ) + Math.PI / 2;
+            }
         } else {
             this.rotation = input.rotation;
             // If no aim provided, use rotation to calculate aim position ahead of player

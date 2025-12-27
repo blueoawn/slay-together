@@ -370,21 +370,14 @@ export class ButtonMapper {
             movement.normalize();
         }
 
-        // For aiming on touch, use the joystick direction projected forward from player
-        // The actual player position will be set by the character controller
-        // For now, we'll use the center of the screen as a reference point
-        const centerX = this.scene.scale.width / 2;
-        const centerY = this.scene.scale.height / 2;
-        
-        // Aim in the direction of movement (or center if not moving)
-        const aim = new Phaser.Math.Vector2(
-            centerX + movement.x * 100,
-            centerY + movement.y * 100
-        );
+        // For touch controls, we return the movement direction vector
+        // The PlayerController will use this to calculate aim based on player position
+        // Return null for aim to signal touch mode - PlayerController will handle it
+        const aim = new Phaser.Math.Vector2(0, 0);  // Placeholder, will be calculated by PlayerController
 
         const inputState = {
             movement,
-            aim,
+            aim,  // Will be overridden by PlayerController based on movement direction
             ability1: this.ability1Pressed,
             ability2: this.ability2Pressed
         };
