@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import ASSETS from '../assets';
 import NetworkManager from '../../managers/NetworkManager.ts';
 import { CharacterIdsEnum } from "../gameObjects/Characters/CharactersEnum.ts";
+import { Depth } from '../constants';
 
 interface CharacterData {
     id: string;
@@ -200,6 +201,11 @@ export class CharacterSelectScene extends Scene {
     create(): void {
         const centerX = this.scale.width / 2;
         const centerY = this.scale.height / 2;
+
+        // Add background image
+        this.add.image(centerX, centerY, 'bg')
+            .setDisplaySize(this.scale.width, this.scale.height)
+            .setDepth(Depth.BACKGROUND);
 
         // Title
         this.titleText = this.add.text(centerX, 80, 'SELECT YOUR CHARACTER', {

@@ -1,4 +1,10 @@
 export default {
+    image: {
+        background: {
+            key: 'bg',
+            args: ['assets/bg.png']
+        }
+    },
     audio: {
         // Sound Effects
         cheeseEat: {

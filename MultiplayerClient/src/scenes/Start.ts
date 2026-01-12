@@ -1,4 +1,5 @@
 import { audioManager } from '../../managers/AudioManager';
+import { Depth } from '../constants';
 
 export class Start extends Phaser.Scene {
     private buttons: Phaser.GameObjects.Text[] = [];
@@ -29,6 +30,11 @@ export class Start extends Phaser.Scene {
         const { width, height } = this.scale;
         const centerX = width * 0.5;
         const centerY = height * 0.5;
+
+        // Add background image
+        this.add.image(centerX, centerY, 'bg')
+            .setDisplaySize(width, height)
+            .setDepth(Depth.BACKGROUND);
 
         this.add.text(centerX, 100, 'Half-dozen Heroz', {
             fontFamily: 'Arial Black',

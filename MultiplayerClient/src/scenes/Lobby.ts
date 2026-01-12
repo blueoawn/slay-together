@@ -1,5 +1,6 @@
 import NetworkManager from '../../managers/NetworkManager';
 import { LobbyUI } from '../ui/LobbyUI';
+import { Depth } from '../constants';
 
 interface LobbyInitData {
     mode?: 'host' | 'join';
@@ -33,6 +34,13 @@ export class Lobby extends Phaser.Scene {
     }
 
     async create(): Promise<void> {
+        const { width, height } = this.scale;
+
+        // Add background image
+        this.add.image(width / 2, height / 2, 'bg')
+            .setDisplaySize(width, height)
+            .setDepth(Depth.BACKGROUND);
+
         // Create UI
         this.ui = new LobbyUI(this);
         this.ui.create();
