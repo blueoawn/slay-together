@@ -7,7 +7,7 @@ const server = new PlaySocketServer({
     port: 3001,
     host: '0.0.0.0',
     rateLimit: 2000,
-    path: '/ws'
+    //path: '/ws'
 });
 
 console.log('🚀 PlaySocketJS Server Booted on port 3001');
