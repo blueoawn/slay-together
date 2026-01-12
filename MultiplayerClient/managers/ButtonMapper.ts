@@ -34,6 +34,11 @@ export class ButtonMapper {
     private ability2Button: Phaser.GameObjects.Container | null = null;
     private ability1Pressed: boolean = false;
     private ability2Pressed: boolean = false;
+    
+    // Multi-touch support
+    private ability1Circle: Phaser.GameObjects.Arc | null = null;
+    private ability2Circle: Phaser.GameObjects.Arc | null = null;
+    private activeTouches: Map<number, string> = new Map(); // touchId -> 'ability1' | 'ability2' | 'joystick'
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -199,12 +204,12 @@ export class ButtonMapper {
 
         // Ability 1 button (left button, primary ability)
         this.ability1Button = this.scene.add.container(buttonBaseX - buttonSpacing, buttonBaseY);
-        const ability1Circle = this.scene.add.circle(0, 0, buttonRadius, 0xff6666, 0.5);
+        this.ability1Circle = this.scene.add.circle(0, 0, buttonRadius, 0xff6666, 0.5);
         const ability1Text = this.scene.add.text(0, 0, '1', {
             fontSize: '24px',
             color: '#ffffff'
         }).setOrigin(0.5);
-        this.ability1Button.add([ability1Circle, ability1Text]);
+        this.ability1Button.add([this.ability1Circle, ability1Text]);
         this.ability1Button.setScrollFactor(0);
         this.ability1Button.setDepth(1000);
         this.ability1Button.setSize(buttonRadius * 2, buttonRadius * 2);
@@ -212,52 +217,93 @@ export class ButtonMapper {
 
         // Ability 2 button (right button, secondary ability)
         this.ability2Button = this.scene.add.container(buttonBaseX, buttonBaseY);
-        const ability2Circle = this.scene.add.circle(0, 0, buttonRadius, 0x6666ff, 0.5);
+        this.ability2Circle = this.scene.add.circle(0, 0, buttonRadius, 0x6666ff, 0.5);
         const ability2Text = this.scene.add.text(0, 0, '2', {
             fontSize: '24px',
             color: '#ffffff'
         }).setOrigin(0.5);
-        this.ability2Button.add([ability2Circle, ability2Text]);
+        this.ability2Button.add([this.ability2Circle, ability2Text]);
         this.ability2Button.setScrollFactor(0);
         this.ability2Button.setDepth(1000);
         this.ability2Button.setSize(buttonRadius * 2, buttonRadius * 2);
         this.ability2Button.setInteractive(new Phaser.Geom.Circle(0, 0, buttonRadius), Phaser.Geom.Circle.Contains);
 
-        // Set up touch event handlers for ability buttons
-        // Buttons can be held down continuously, character handles cooldown
-        this.ability1Button.on('pointerdown', () => {
-            console.debug('[ButtonMapper] Ability 1 button pressed');
-            this.ability1Pressed = true;
-            ability1Circle.setAlpha(0.8);
-        });
-        this.ability1Button.on('pointerup', () => {
-            console.debug('[ButtonMapper] Ability 1 button released (pointerup)');
-            this.ability1Pressed = false;
-            ability1Circle.setAlpha(0.5);
-        });
-        this.ability1Button.on('pointerupoutside', () => {
-            console.debug('[ButtonMapper] Ability 1 button released (pointerupoutside)');
-            this.ability1Pressed = false;
-            ability1Circle.setAlpha(0.5);
-        });
+        // Set up multi-touch event handlers on the canvas
+        // This allows simultaneous joystick and button presses with different fingers
+        const canvas = this.scene.game.canvas;
+        
+        const handleTouchStart = (e: TouchEvent) => {
+            e.preventDefault();
+            
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches[i];
+                const touchId = touch.identifier;
+                
+                // Convert touch coordinates to game coordinates
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = this.scene.scale.width / rect.width;
+                const scaleY = this.scene.scale.height / rect.height;
+                const x = (touch.clientX - rect.left) * scaleX;
+                const y = (touch.clientY - rect.top) * scaleY;
+                
+                // Check if touch is on ability 1 button
+                if (this.ability1Button) {
+                    const dx = x - this.ability1Button.x;
+                    const dy = y - this.ability1Button.y;
+                    if (Math.sqrt(dx * dx + dy * dy) <= buttonRadius) {
+                        this.activeTouches.set(touchId, 'ability1');
+                        this.ability1Pressed = true;
+                        this.ability1Circle?.setAlpha(0.8);
+                        console.debug('[ButtonMapper] Ability 1 pressed (touch)', touchId);
+                        continue;
+                    }
+                }
+                
+                // Check if touch is on ability 2 button
+                if (this.ability2Button) {
+                    const dx = x - this.ability2Button.x;
+                    const dy = y - this.ability2Button.y;
+                    if (Math.sqrt(dx * dx + dy * dy) <= buttonRadius) {
+                        this.activeTouches.set(touchId, 'ability2');
+                        this.ability2Pressed = true;
+                        this.ability2Circle?.setAlpha(0.8);
+                        console.debug('[ButtonMapper] Ability 2 pressed (touch)', touchId);
+                        continue;
+                    }
+                }
+                
+                // If not on buttons, mark as joystick touch
+                this.activeTouches.set(touchId, 'joystick');
+            }
+        };
+        
+        const handleTouchEnd = (e: TouchEvent) => {
+            e.preventDefault();
+            
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches[i];
+                const touchId = touch.identifier;
+                const touchType = this.activeTouches.get(touchId);
+                
+                if (touchType === 'ability1') {
+                    this.ability1Pressed = false;
+                    this.ability1Circle?.setAlpha(0.5);
+                    console.debug('[ButtonMapper] Ability 1 released (touch)', touchId);
+                } else if (touchType === 'ability2') {
+                    this.ability2Pressed = false;
+                    this.ability2Circle?.setAlpha(0.5);
+                    console.debug('[ButtonMapper] Ability 2 released (touch)', touchId);
+                }
+                
+                this.activeTouches.delete(touchId);
+            }
+        };
+        
+        canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+        canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+        canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
-        this.ability2Button.on('pointerdown', () => {
-            console.debug('[ButtonMapper] Ability 2 button pressed');
-            this.ability2Pressed = true;
-            ability2Circle.setAlpha(0.8);
-        });
-        this.ability2Button.on('pointerup', () => {
-            console.debug('[ButtonMapper] Ability 2 button released (pointerup)');
-            this.ability2Pressed = false;
-            ability2Circle.setAlpha(0.5);
-        });
-        this.ability2Button.on('pointerupoutside', () => {
-            console.debug('[ButtonMapper] Ability 2 button released (pointerupoutside)');
-            this.ability2Pressed = false;
-            ability2Circle.setAlpha(0.5);
-        });
-
-        console.log('ButtonMapper: Virtual joystick and ability buttons initialized for touch controls');
+        console.log('ButtonMapper: Virtual joystick and ability buttons initialized for multi-touch controls');
     }
 
     getInput(): AbstractInputState {
@@ -446,5 +492,10 @@ export class ButtonMapper {
             this.ability2Button.destroy();
             this.ability2Button = null;
         }
+        
+        // Clear touch tracking
+        this.activeTouches.clear();
+        this.ability1Circle = null;
+        this.ability2Circle = null;
     }
 }
