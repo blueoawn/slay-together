@@ -10,6 +10,7 @@ import Explosion from '../src/gameObjects/Explosion';
 import EnemySlime from '../src/gameObjects/NPC/EnemySlime.ts';
 import EnemyLizardWizard from '../src/gameObjects/NPC/EnemyLizardWizard';
 import { MagicMissile } from '../src/gameObjects/Projectile/MagicMissile.ts';
+import { EnemyMagicMissile } from '../src/gameObjects/Projectile/EnemyMagicMissile.ts';
 import Wall from '../src/gameObjects/Wall.ts';
 import { Spawner } from '../src/gameObjects/Spawner';
 import { AggressiveBehavior } from '../src/behaviorScripts/Aggressive';
@@ -220,6 +221,18 @@ export function updateSpawners(scene: GameScene): void {
 }
 
 /**
+ * Create enemy magic missile projectile (used by boss)
+ */
+export function fireEnemyMagicMissile(scene: GameScene, x: number, y: number, power: number, targetX: number, targetY: number): void {
+    try {
+        const missile = new EnemyMagicMissile(scene, x, y, targetX, targetY, power);
+        scene.enemyBulletGroup.add(missile);
+    } catch (err) {
+        console.error('[LEVEL] Error firing enemy magic missile:', err);
+    }
+}
+
+/**
  * Create enemy projectile
  */
 export function fireEnemyBullet(scene: GameScene, x: number, y: number, power: number, targetX?: number, targetY?: number): void {
@@ -249,9 +262,9 @@ export function fireEnemyBullet(scene: GameScene, x: number, y: number, power: n
 /**
  * Create lizard wizard enemy
  */
-export function addLizardWizardEnemy(scene: GameScene, x: number, y: number): EnemyLizardWizard {
+export function addLizardWizardEnemy(scene: GameScene, x: number, y: number, behavior?: IBehavior, isBoss: boolean = false): EnemyLizardWizard {
     try {
-        const enemy = new EnemyLizardWizard(scene, x, y);
+        const enemy = new EnemyLizardWizard(scene, x, y, behavior, isBoss);
         scene.enemyGroup.add(enemy);
         return enemy;
     } catch (err) {
@@ -263,9 +276,9 @@ export function addLizardWizardEnemy(scene: GameScene, x: number, y: number): En
 /**
  * Create slime enemy
  */
-export function addSlimeEnemy(scene: GameScene, x: number, y: number): EnemySlime {
+export function addSlimeEnemy(scene: GameScene, x: number, y: number, behavior?: IBehavior): EnemySlime {
     try {
-        const enemy = new EnemySlime(scene, x, y);
+        const enemy = new EnemySlime(scene, x, y, behavior);
         scene.enemyGroup.add(enemy);
         return enemy;
     } catch (err) {

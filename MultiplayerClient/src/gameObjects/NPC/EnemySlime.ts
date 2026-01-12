@@ -1,5 +1,6 @@
 import { EnemyController } from './EnemyController';
 import { GameScene } from '../../scenes/GameScene';
+import { IBehavior } from '../../behaviorScripts/Behavior';
 import ASSETS from '../../assets';
 
 export default class EnemySlime extends EnemyController {
@@ -8,6 +9,7 @@ export default class EnemySlime extends EnemyController {
     private targetY: number = 0;
     private chaseRange: number = 300;
     private currentDirection: string = 'down';
+    private behavior: IBehavior | null = null;
 
     // Animation keys
     static readonly ANIM_DOWN = 'slime_down';
@@ -15,21 +17,29 @@ export default class EnemySlime extends EnemyController {
     static readonly ANIM_RIGHT = 'slime_right';
     static readonly ANIM_UP = 'slime_up';
 
-    constructor(scene: GameScene, x: number, y: number) {
+    constructor(scene: GameScene, x: number, y: number, behavior?: IBehavior) {
         // Pass slime texture directly to avoid wrong sprite flash
         super(scene, x, y, 0, ASSETS.spritesheet.slime.key);
 
         this.enemyType = 'EnemySlime';
 
         // Set stats
-        this.health = 300;
-        this.maxHealth = 300;
+        this.health = 3;
+        this.maxHealth = 3;
         this.power = 1;
 
         this.setScale(0.15, 0.15)
         this.setBodySize(this.width, this.height);
 
         this.setCollideWorldBounds(true);
+
+        // Set optional behavior (if not provided, use built-in chase logic)
+        if (behavior) {
+            this.behavior = behavior;
+            if (this.behavior.initialize) {
+                this.behavior.initialize(this);
+            }
+        }
 
         // Create animations if they don't exist
         this.createAnimations();
@@ -82,7 +92,18 @@ export default class EnemySlime extends EnemyController {
         }
     }
 
-    protected updateAI(_time: number, _delta: number): void {
+    protected updateAI(time: number, delta: number): void {
+        // Use behavior if provided, otherwise use built-in chase logic
+        if (this.behavior) {
+            this.behavior.update(this, time, delta);
+            // Update animation based on current velocity
+            const body = this.body as Phaser.Physics.Arcade.Body;
+            if (body) {
+                this.updateAnimation(body.velocity.x, body.velocity.y);
+            }
+            return;
+        }
+
         const player = this.gameScene.player;
         if (!player || !player.active) {
             this.setVelocity(0, 0);
@@ -144,6 +165,10 @@ export default class EnemySlime extends EnemyController {
     }
 
     die(): void {
+        // Cleanup behavior if present
+        if (this.behavior && this.behavior.cleanup) {
+            this.behavior.cleanup(this);
+        }
         this.gameScene.addExplosion(this.x, this.y);
         this.gameScene.removeEnemy(this);
     }

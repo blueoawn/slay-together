@@ -6,22 +6,25 @@ import ASSETS from '../../assets';
 
 export default class EnemyLizardWizard extends EnemyController {
     private behavior: IBehavior;
+    isBoss: boolean = false;
 
-    constructor(scene: GameScene, x: number, y: number, behavior?: IBehavior) {
+    constructor(scene: GameScene, x: number, y: number, behavior?: IBehavior, isBoss: boolean = false) {
         // Use the same lizardWizard texture as the player character
         super(scene, x, y, 0, ASSETS.image.lizardWizard.key);
 
         // Set enemy type for network sync
         this.enemyType = 'EnemyLizardWizard';
+        this.isBoss = isBoss;
 
-        // Match player lizard wizard scale
-        this.setScale(0.5, 0.5);
+        // Match player lizard wizard scale (bosses are larger)
+        const scale = isBoss ? 1.0 : 0.5;
+        this.setScale(scale, scale);
         this.setBodySize(this.width, this.height);
 
-        // Set enemy stats
-        this.health = 5;
-        this.maxHealth = 5;
-        this.power = 1;
+        // Set enemy stats (bosses have more health)
+        this.health = isBoss ? 50 : 5;
+        this.maxHealth = isBoss ? 50 : 5;
+        this.power = isBoss ? 2 : 1;
 
         // Enable physics body
         this.setCollideWorldBounds(true);

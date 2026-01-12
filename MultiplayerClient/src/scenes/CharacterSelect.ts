@@ -108,6 +108,7 @@ export class CharacterSelectScene extends Scene {
     private networkEnabled: boolean = false;
     private isHost: boolean = false;
     private players: string[] = [];
+    private mapId: string = 'summoners-rift';
     private inCharacterSelection: boolean = false;  // Guard against multiple character selection transitions
     private characterSelections: Map<string, CharacterSelection> = new Map();
 
@@ -186,11 +187,13 @@ export class CharacterSelectScene extends Scene {
         this.networkEnabled = data?.networkEnabled || false;
         this.isHost = data?.isHost || false;
         this.players = data?.players || [];
+        this.mapId = data?.mapId || 'summoners-rift';
 
         console.log('CharacterSelect initialized:', {
             networkEnabled: this.networkEnabled,
             isHost: this.isHost,
-            players: this.players
+            players: this.players,
+            mapId: this.mapId
         });
     }
 
@@ -821,7 +824,8 @@ export class CharacterSelectScene extends Scene {
                 characterId: this.selectedCharacterId,
                 networkEnabled: this.networkEnabled,
                 isHost: this.isHost,
-                players: this.players
+                players: this.players,
+                mapId: this.mapId
             });
 
             console.log('Scene transition started');

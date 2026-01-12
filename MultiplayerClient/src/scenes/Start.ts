@@ -53,8 +53,8 @@ export class Start extends Phaser.Scene {
         this.buttons.push(this.createButton(
             centerX,
             centerY - 60,
-            'Solo Play',
-            () => this.startSoloGame()
+            'Slime Invasion',
+            () => this.startSlimeInvasion()
         ));
 
         this.buttons.push(this.createButton(
@@ -252,11 +252,12 @@ export class Start extends Phaser.Scene {
         });
     }
 
-    startSoloGame() {
+    startSlimeInvasion() {
         this.scene.start('CharacterSelectScene', {
             networkEnabled: false,
             isHost: false,
-            players: []
+            players: [],
+            mapId: 'slime-invasion'
         });
     }
 

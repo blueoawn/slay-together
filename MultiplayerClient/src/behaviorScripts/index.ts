@@ -8,3 +8,7 @@ export { TerritorialBehavior } from './Territorial';
 // Ally Behaviors (for CPU-controlled player characters)
 export { IAllyBehavior, AllyBehavior } from './AllyBehavior';
 export { FollowAndAttackBehavior } from './FollowAndAttack';
+
+// Wave Mode Behaviors
+export { KamikazeBehavior } from './KamikazeBehavior';
+export { BossBehavior } from './BossBehavior';
