@@ -63,6 +63,18 @@ export class EnemyMagicMissile extends Phaser.Physics.Arcade.Sprite {
         this.particleTrail.setDepth(Depth.PROJECTILE - 1);
     }
 
+    getPower(): number {
+        return this.damage;
+    }
+
+    getDamage(): number {
+        return this.damage;
+    }
+
+    remove(): void {
+        this.destroy();
+    }
+
     preUpdate(time: number, delta: number): void {
         super.preUpdate(time, delta);
 
