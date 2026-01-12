@@ -596,6 +596,9 @@ export class GameScene extends Scene
      * Show level complete message
      */
     private showLevelCompleteMessage(): void {
+        // Prevent any further collision processing during victory
+        this.gameStarted = false;
+
         const text = this.add.text(
             this.scale.width / 2,
             this.scale.height / 2,

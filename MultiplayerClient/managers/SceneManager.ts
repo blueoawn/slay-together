@@ -32,10 +32,13 @@ export class SceneManager {
      * Triggers camera fade and scene transition
      */
     static endGameSession(scene: GameScene): void {
+        // Prevent multiple game over triggers
+        if (!scene.gameStarted) return;
+
         scene.gameStarted = false;
-        
+
         console.log('[SCENE] Game ended, transitioning to GameOver');
-        
+
         scene.cameras.main.fade(1000, 0, 0, 0, false, (_camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
             if (progress === 1) {
                 scene.scene.start('GameOver');

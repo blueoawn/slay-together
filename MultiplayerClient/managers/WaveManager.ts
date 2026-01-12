@@ -65,6 +65,9 @@ export class WaveManager {
     }
 
     update(): void {
+        // Skip updates if game has ended
+        if (!this.scene.gameStarted) return;
+
         if (!this.scene.isHost && this.scene.networkEnabled) {
             return;
         }
@@ -211,7 +214,10 @@ export class WaveManager {
         this.state = WaveState.Waiting;
 
         this.scene.time.delayedCall(2000, () => {
-            this.startNextWave();
+            // Check if game is still running before starting next wave
+            if (this.scene.gameStarted) {
+                this.startNextWave();
+            }
         });
     }
 
@@ -220,7 +226,10 @@ export class WaveManager {
         console.log(`[WAVE] Boss spawning in ${delay}ms`);
 
         this.scene.time.delayedCall(delay, () => {
-            this.spawnBoss();
+            // Check if game is still running before spawning boss
+            if (this.scene.gameStarted) {
+                this.spawnBoss();
+            }
         });
     }
 
@@ -254,6 +263,9 @@ export class WaveManager {
     }
 
     private checkBossDefeated(): void {
+        // Prevent double-triggering
+        if (this.state === WaveState.LevelComplete) return;
+
         const enemiesRemaining = this.scene.enemyGroup.getChildren().length;
 
         if (enemiesRemaining === 0) {

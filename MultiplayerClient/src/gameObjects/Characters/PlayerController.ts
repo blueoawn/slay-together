@@ -510,10 +510,23 @@ export abstract class PlayerController extends Phaser.Physics.Arcade.Sprite impl
                 this.knockbackTimer = null;
             }
 
+            // Skip delayed cleanup if scene is shutting down
+            if (!this.gameScene || !this.gameScene.scene.isActive()) {
+                if (this.healthBarContainer) {
+                    this.healthBarContainer.destroy();
+                }
+                if (this.skillBarContainer) {
+                    this.skillBarContainer.destroy();
+                }
+                return;
+            }
+
             // Delay destruction of health bar to ensure it is visible when player dies
             // Because instantly destroying it after death would be kinda jank?? idk
             const delayedDestructionTimer = this.gameScene.time.delayedCall(1000, () => {
-                this.healthBarContainer.destroy();
+                if (this.healthBarContainer) {
+                    this.healthBarContainer.destroy();
+                }
                 if (this.skillBarContainer) {
                     this.skillBarContainer.destroy();
                 }

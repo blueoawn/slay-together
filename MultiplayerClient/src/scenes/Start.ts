@@ -63,6 +63,15 @@ export class Start extends Phaser.Scene {
             () => this.startSlimeInvasion()
         ));
 
+        this.add.text(centerX, centerY - 10, '⚠️ Multiplayer is experimental and broken, for demo only ⚠️', {
+            fontFamily: 'Arial',
+            fontSize: 18,
+            color: '#ffaa00',
+            stroke: '#000000',
+            strokeThickness: 4,
+            align: 'center'
+        }).setOrigin(0.5);
+
         this.buttons.push(this.createButton(
             centerX,
             centerY + 20,

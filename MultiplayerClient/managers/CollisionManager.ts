@@ -181,11 +181,14 @@ export function setupMultiplayerCollisions(scene: GameScene): void {
  * Handle player hit by projectile
  */
 export function hitPlayer(scene: GameScene, player: PlayerController, projectile: Projectile): void {
+    // Skip if game has already ended
+    if (!scene.gameStarted) return;
+
     try {
         addExplosion(scene, player.x, player.y);
         player.hit(projectile.getPower());
         projectile.remove();
-        
+
         if (player.health <= 0) {
             console.log('[COLLISION] Player defeated');
             scene.GameOver();
@@ -199,6 +202,9 @@ export function hitPlayer(scene: GameScene, player: PlayerController, projectile
  * Handle player collision with enemy (contact damage with knockback)
  */
 export function hitPlayerByEnemy(scene: GameScene, player: PlayerController, enemy: any): void {
+    // Skip if game has already ended
+    if (!scene.gameStarted) return;
+
     try {
         // Check if either entity is on cooldown - if so, skip this collision
         const playerCanTakeDamage = player.canTakeContactDamage?.() ?? true;
