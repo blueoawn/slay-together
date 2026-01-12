@@ -33,7 +33,7 @@ export class NetworkManager {
         const clientId = `player_${Date.now()}_${Math.random().toString(36).slice(2)}`;
 
         this.socket = new PlaySocket(clientId, {
-            endpoint: 'wss://hdh.grem.studio'
+            endpoint: 'wss://hdh.grem.studio/ws'
         });
 
         this.localPlayerId = await this.socket.init();
